@@ -115,6 +115,17 @@
 			<version>3.1.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<dependency>
+
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-core</artifactId>
+			<version>2.2.20</version>
+		</dependency>
 
 		<dependency>
 			<groupId>mysql</groupId>
@@ -132,6 +143,8 @@
 			<groupId>org.springframework.session</groupId>
 			<artifactId>spring-session-data-redis</artifactId>
 		</dependency>
+
+
 
 <!--		&lt;!&ndash; Lettuce Client (Redis Connection) &ndash;&gt;-->
 <!--		<dependency>-->
