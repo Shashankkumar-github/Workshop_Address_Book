@@ -49,10 +49,10 @@ public class AuthController {
     // 🔹 Reset Password - Verify Token & Update Password
     @PostMapping("/reset-password")
     public String resetPassword(@RequestParam("token") String token, @RequestBody Map<String, String> request) {
+
         if (!jwtUtil.validateToken(token)) {
             return "Invalid or expired token!";
         }
-
         String email = jwtUtil.extractEmailFromToken(token);
         String newPassword = request.get("password");
 
