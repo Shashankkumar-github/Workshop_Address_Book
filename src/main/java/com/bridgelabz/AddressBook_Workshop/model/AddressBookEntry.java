@@ -11,17 +11,20 @@ public class AddressBookEntry {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-    private String email;
-    private String phoneNumber;
+    private String fullName;
     private String address;
-    //dto to entity
-    public AddressBookEntry(String name, String email, String phoneNumber, String address) {
-        this.name = name;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
+    private String city;
+    private String state;
+    private String zipcode;
+    private String phoneNumber;
+
+    // Constructor to map DTO to Entity
+    public AddressBookEntry(String fullName, String address, String city, String state, String zipcode, String phoneNumber) {
+        this.fullName = fullName;
         this.address = address;
+        this.city = city;
+        this.state = state;
+        this.zipcode = zipcode;
+        this.phoneNumber = phoneNumber;
     }
 }
-
-

@@ -27,6 +27,7 @@ public class AddressBookService implements IAddressBookService {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
@@ -67,7 +68,8 @@ public class AddressBookService implements IAddressBookService {
         // Remove Cache so new data can be fetched
         redisTemplate.delete(CACHE_KEY);
 
-        rabbitTemplate.convertAndSend("AddressBookExchange", "contactKey", contactDTO.getEmail());
+        // Send message to RabbitMQ (Previously was sending email, but we removed it)
+        rabbitTemplate.convertAndSend("AddressBookExchange", "contactKey", "New contact added: " + contactDTO.getFullName());
 
         return modelMapper.map(savedContact, AddressBookDTO.class);
     }

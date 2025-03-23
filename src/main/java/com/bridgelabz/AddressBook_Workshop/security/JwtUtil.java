@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.Base64;
+import java.util.function.Function;
 
 @Service
 public class JwtUtil {
@@ -16,13 +16,12 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
-    private static final long EXPIRATION_TIME = 15 * 60 *1000; // 1 day
-
+    private static final long EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 1 day (24 hours)
 
     private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
-        return Keys.hmacShaKeyFor(keyBytes);
+        return Keys.hmacShaKeyFor(secret.getBytes()); // Ensure your key is NOT Base64 encoded
     }
+
     public String generateToken(String email) {
         return Jwts.builder()
                 .setSubject(email)
@@ -31,31 +30,37 @@ public class JwtUtil {
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+
     public String extractEmailFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject();
+        return extractClaim(token, Claims::getSubject);
     }
+
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException e) {
-            return false; // Token expired
-        } catch (JwtException e) {
-            return false; // Invalid token
+            System.out.println("JWT expired: " + e.getMessage());
+        } catch (MalformedJwtException e) {
+            System.out.println("Invalid JWT: " + e.getMessage());
+        } catch (SignatureException e) {
+            System.out.println("Invalid JWT signature: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("JWT validation failed: " + e.getMessage());
         }
+        return false;
     }
 
-    public String extractUsername(String token) {
-        Claims claims = Jwts.parserBuilder()
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return claims.getSubject();
+    }
+
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
     }
 }
